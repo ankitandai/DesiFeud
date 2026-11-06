@@ -1,0 +1,1026 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desi Feud</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Yatra+One&family=Mukta:wght@500;700;800&display=swap">
+<style>
+/* Layout concept: the painted back of a South Asian truck. Arched signboard in the middle,
+   a team panel on each side, toran bunting along the top, and a plain host dock below. */
+:root {
+  color-scheme: dark;
+  --ground: #053b40;
+  --ground-2: #04292e;
+  --panel: #0a5c60;
+  --panel-2: #0d7176;
+  --marigold: #f6a90f;
+  --rani: #e01e72;
+  --sky: #27b5c9;
+  --paint: #fff3d6;
+  --ink: #1b1320;
+  --vermilion: #e2401f;
+  --muted: #a9cfca;
+  --display: "Rozha One", "Playfair Display", Georgia, serif;
+  --sign: "Yatra One", "Rozha One", Georgia, serif;
+  --body: "Mukta", "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  color: var(--paint);
+  font-family: var(--body);
+  font-weight: 500;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='20'%3E%3Cpath d='M0 0h32L16 20z' fill='%23f6a90f'/%3E%3Cpath d='M32 0h32L48 20z' fill='%23e01e72'/%3E%3Cpath d='M64 0h32L80 20z' fill='%2327b5c9'/%3E%3C/svg%3E") repeat-x top,
+    radial-gradient(circle at 12px 12px, rgba(255,243,214,.05) 2px, transparent 3px) 0 0 / 24px 24px,
+    var(--ground);
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
+.app {
+  min-height: 100%;
+  display: flex; flex-direction: column; gap: clamp(8px, 1.6vh, 16px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 30px 12px;
+}
+.logo {
+  font-family: var(--display); color: var(--marigold); line-height: 1; margin: 0;
+  letter-spacing: .01em;
+  text-shadow: .035em .035em 0 var(--rani), .07em .07em 0 var(--ground-2);
+}
+.btn {
+  border: 2px solid var(--marigold); background: transparent; color: var(--paint);
+  border-radius: 8px; padding: 8px 14px; font-weight: 700; min-height: 44px;
+}
+.btn:hover { background: rgba(246,169,15,.16); }
+.btn.primary { background: var(--marigold); color: var(--ink); }
+.btn.primary:hover { background: #ffc043; }
+.btn.danger { background: var(--vermilion); border-color: var(--vermilion); color: #fff; }
+.btn.quiet { border-color: rgba(169,207,202,.45); color: var(--muted); font-weight: 500; }
+kbd {
+  font: 700 .78em var(--body); border: 1px solid currentColor; border-radius: 4px;
+  padding: 0 5px; margin-left: 6px; opacity: .75;
+}
+
+/* Start */
+.start { flex: 1; display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap: clamp(24px,5vw,72px);
+  align-items: center; max-width: 1120px; width: 100%; margin: 0 auto; }
+.start .logo { font-size: clamp(64px, 11vw, 148px); }
+.tag { font-family: var(--sign); color: var(--sky); font-size: clamp(19px,2.2vw,28px); margin: 14px 0 0; }
+.how { max-width: 52ch; line-height: 1.5; font-size: 17px; }
+.sample { margin-top: 18px; max-width: 460px; }
+.sample p { margin: 0 0 8px; color: var(--muted); font-size: 15px; }
+.sample .tiles { grid-auto-flow: row; grid-template-rows: none; }
+.form { display: grid; gap: 14px; background: var(--ground-2); border: 2px solid var(--marigold);
+  border-radius: 44px 44px 12px 12px; padding: 30px 26px 24px; }
+.form h2 { margin: 0; font-family: var(--sign); font-weight: 400; font-size: 24px; color: var(--marigold); }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label, .legend { font-size: 14px; color: var(--muted); }
+.field input { width: 100%; padding: 10px 12px; min-height: 44px; border-radius: 8px;
+  border: 1px solid var(--panel-2); background: var(--ground); color: var(--paint); }
+.seg { display: flex; gap: 8px; flex-wrap: wrap; }
+.seg button { flex: 1; min-width: 72px; }
+.seg button[aria-pressed="true"] { background: var(--marigold); color: var(--ink); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.divider { border: 0; border-top: 1px solid rgba(169,207,202,.3); margin: 4px 0; width: 100%; }
+.keyrow { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; align-items: end; }
+.err { color: #ff9f8a; font-size: 14px; min-height: 1.2em; margin: 0; }
+.left { color: var(--muted); font-size: 14px; margin: 0; }
+
+/* Game */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.top .logo { font-size: clamp(30px, 5vh, 54px); }
+.roundtag { font-family: var(--sign); font-size: clamp(17px, 3vh, 28px); color: var(--paint); }
+.roundtag b { color: var(--marigold); font-weight: 400; }
+.stage { flex: 1; min-height: 0; display: grid; gap: clamp(10px, 1.6vw, 22px);
+  grid-template-columns: minmax(120px, 15vw) minmax(0, 1fr) minmax(120px, 15vw); align-items: stretch; }
+.team { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  text-align: center; background: var(--ground-2); border: 3px solid var(--panel-2);
+  border-radius: 60px 60px 12px 12px; padding: 18px 8px; min-width: 0; }
+.team.on { border-color: var(--marigold); box-shadow: 0 0 0 3px var(--rani); }
+.team .nm { font-family: var(--sign); font-size: clamp(18px, 2vw, 32px); overflow-wrap: anywhere; line-height: 1.1; }
+.team .sc { font-family: var(--display); font-size: clamp(38px, 5.4vw, 92px); color: var(--marigold);
+  line-height: 1; font-variant-numeric: tabular-nums; }
+.team .st { font-size: 14px; font-weight: 700; min-height: 1.5em; color: var(--sky); text-transform: uppercase; letter-spacing: .06em; }
+.board { min-width: 0; display: flex; flex-direction: column; gap: clamp(8px, 1.4vh, 14px);
+  background: var(--panel); border: 5px solid var(--marigold); box-shadow: 0 0 0 4px var(--rani), 0 0 0 7px var(--marigold);
+  border-radius: 56px 56px 14px 14px; padding: clamp(14px, 2.4vh, 26px) clamp(12px, 2vw, 28px); margin: 7px; }
+.q { font-family: var(--sign); text-align: center; margin: 0; text-wrap: balance;
+  font-size: clamp(21px, calc(1.5vw + 1.8vh), 44px); line-height: 1.2; }
+.meter { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.strikes { display: flex; gap: 6px; min-width: 96px; }
+.strikes svg { height: clamp(30px, 5vh, 46px); width: auto; opacity: .22; filter: grayscale(1); }
+.strikes svg.lit { opacity: 1; filter: none; }
+.pot { font-family: var(--display); font-size: clamp(30px, 5vh, 54px); color: var(--ink); background: var(--marigold);
+  border-radius: 10px; padding: 0 16px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.say { flex: 1; text-align: right; font-weight: 700; font-size: clamp(16px, 2.4vh, 24px); min-width: 0; }
+.tiles { flex: 1; display: grid; grid-template-rows: repeat(4, minmax(0,1fr)); grid-template-columns: repeat(2, minmax(0,1fr));
+  grid-auto-flow: column; gap: clamp(6px, 1.1vh, 11px); perspective: 900px; min-height: 0; }
+.tile { position: relative; min-height: clamp(50px, 9.5vh, 104px); background: none; border: 0; padding: 0; color: inherit; }
+.tile:disabled { cursor: default; }
+.flip { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .55s cubic-bezier(.3,1.4,.5,1); }
+.tile.on .flip { transform: rotateX(180deg); }
+.face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 8px; display: flex; align-items: center; }
+.back { background: var(--ground-2); border: 2px solid var(--panel-2); justify-content: center; }
+.tile:not(:disabled):hover .back { border-color: var(--marigold); }
+.num { font-family: var(--display); width: 1.7em; height: 1.7em; border-radius: 50%; display: grid; place-items: center;
+  background: var(--marigold); color: var(--ink); font-size: clamp(19px, 3.4vh, 34px); line-height: 1; }
+.front { background: var(--paint); color: var(--ink); transform: rotateX(180deg); overflow: hidden; }
+.front .a { flex: 1; min-width: 0; padding: 0 12px; text-align: left; font-weight: 800; line-height: 1.08;
+  font-size: clamp(16px, calc(.8vw + 1.5vh), 32px); }
+.front .p { font-family: var(--display); align-self: stretch; display: grid; place-items: center; min-width: 2.1em;
+  background: var(--rani); color: #fff; font-size: clamp(22px, 3.8vh, 40px); font-variant-numeric: tabular-nums; }
+.tile.empty { background: rgba(4,41,46,.35); border-radius: 8px; }
+.tile.missed .front { background: #c9dcd2; }
+.tile.missed .front .p { background: #5f7f7d; }
+.dock { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; background: var(--ground-2);
+  border-radius: 10px; padding: 8px 10px; }
+.hint { flex: 1 1 280px; min-width: 0; color: var(--muted); font-size: 15px; line-height: 1.25; }
+.code { font-size: 14px; color: var(--muted); white-space: nowrap; }
+.code b { color: var(--paint); letter-spacing: .08em; }
+
+/* Strike overlay */
+#fx { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; gap: 3vw; z-index: 20; pointer-events: none; }
+#fx svg { height: 42vh; animation: thrown .85s cubic-bezier(.2,.8,.3,1) both; }
+#fx svg:nth-child(2) { animation-delay: .07s; }
+#fx svg:nth-child(3) { animation-delay: .14s; }
+@keyframes thrown {
+  0% { transform: translate(-70vw, -40vh) rotate(-540deg) scale(.4); opacity: 0; }
+  45% { transform: rotate(12deg) scale(1.08); opacity: 1; }
+  60%, 80% { transform: rotate(-6deg) scale(1); opacity: 1; }
+  100% { transform: rotate(-6deg) scale(.96); opacity: 0; }
+}
+
+/* Jaldi Jaldi */
+.meter .clock { font-family: var(--display); font-size: clamp(30px, 5vh, 54px); line-height: 1.3; min-width: 96px; color: var(--paint); font-variant-numeric: tabular-nums; }
+.meter .clock.low { color: #ff8a6f; }
+.tiles.ten { grid-template-rows: repeat(5, minmax(0,1fr)); }
+
+/* End */
+.end { flex: 1; display: grid; place-content: center; justify-items: center; text-align: center; gap: 12px; position: relative; z-index: 1; }
+.end h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(42px, 9vw, 110px); line-height: 1.05; color: var(--marigold); text-wrap: balance;
+  text-shadow: .03em .03em 0 var(--rani); }
+.end p { margin: 0; font-size: clamp(18px,2.4vw,26px); max-width: 44ch; }
+#petals { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* Host key */
+.key { max-width: 560px; width: 100%; margin: 0 auto; display: grid; gap: 12px; }
+.key h2 { margin: 0; font-family: var(--sign); font-weight: 400; font-size: 22px; line-height: 1.2; }
+.keytop { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.keytop .logo { font-size: 34px; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tabs button { flex: 1; min-width: 44px; padding-inline: 6px; }
+.tabs button[aria-pressed="true"] { background: var(--marigold); color: var(--ink); }
+.ans { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ans li { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 10px; align-items: center; background: var(--panel); border-radius: 8px; padding: 10px 12px; font-size: 18px; font-weight: 700; }
+.ans i { font-style: normal; color: var(--marigold); font-family: var(--display); }
+.ans em { font-style: normal; font-variant-numeric: tabular-nums; color: var(--marigold); }
+.fk { display: grid; gap: 6px; }
+.fk p { margin: 8px 0 0; font-weight: 800; }
+.fk small { color: var(--muted); font-size: 15px; line-height: 1.35; }
+
+@media (max-width: 760px) {
+  .start { grid-template-columns: minmax(0,1fr); }
+  .stage { grid-template-columns: 1fr 1fr; }
+  .board { grid-column: 1 / -1; grid-row: 2; }
+  .team { border-radius: 26px 26px 8px 8px; padding: 8px; }
+  .tiles { grid-auto-flow: row; grid-template-columns: minmax(0,1fr); grid-template-rows: none; }
+  .tile { min-height: 56px; }
+  .tile.empty { display: none; }
+  .tiles.ten { grid-template-rows: none; }
+  .say { flex-basis: 100%; text-align: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip { transition: none; }
+  #fx svg { animation-name: fade; }
+  @keyframes fade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
+}
+</style>
+
+<div class="app" id="app"></div>
+<div id="fx" hidden aria-hidden="true"></div>
+
+<script>
+/* Point values are written estimates for play, not results of a real survey. */
+const BANK = [
+"Name something a desi mom says when you tell her you're not hungry|Just a little bit=36|I made it specially for you=22|You look so thin=18|Have one more roti=13|Who will eat all this?=11",
+"Name something found inside the blue cookie tin instead of cookies|Sewing kit=52|Buttons=16|Medicines=12|Spices=9|Rubber bands=6|Old keys=5",
+"Name something an aunty asks you at a wedding|When are you getting married?=44|How much do you earn?=18|What do you do now?=14|Whose child are you?=11|Why don't you visit?=8|Have you eaten?=5",
+"Name a snack you must serve when guests come over|Samosa=34|Biscuits=20|Pakora=16|Namkeen=14|Mithai=10|Dry fruits=6",
+"Name something desi parents reuse instead of throwing away|Ice cream tubs=38|Plastic bags=22|Gift wrap=12|Old clothes=11|Glass jars=10|Old toothbrush=7",
+"Name a film star every uncle tries to imitate|Amitabh Bachchan=42|Shah Rukh Khan=22|Dev Anand=12|Rajinikanth=10|Nana Patekar=8|Shatrughan Sinha=6",
+"Name something parents compare with the neighbour's kid|Marks=42|Job=20|Salary=14|Marriage=12|Manners=8|Height=4",
+"Name something that always runs late at a desi function|The guests=32|The food=24|The groom's party=20|The hosts=10|The DJ=8|The photographer=6",
+"Name something a desi dad does at the airport|Arrives hours early=40|Checks the passports again=24|Weighs the bags=16|Brings food from home=12|Asks the gate agent questions=8",
+"Name a home remedy a desi mom swears by|Haldi doodh=38|Vicks=20|Ginger tea=16|Coconut oil=12|Honey=8|Ajwain=6",
+"Name something you'd find in every desi fridge|Leftover dal=26|Achar=22|Green chillies=18|Yogurt=16|Milk=10|Coriander=8",
+"Name a job desi parents want for their children|Doctor=48|Engineer=28|Lawyer=9|Accountant=8|Government job=7",
+"Name the loudest thing at a desi wedding|The DJ=40|The dhol=28|The aunties=16|The uncles dancing=9|The fireworks=7",
+"Name a dance move every uncle does at a wedding|Bhangra shoulders=38|Screwing in the light bulb=28|Pointing at the sky=14|Throwing money=10|Naagin dance=10",
+"Name the first thing you go for at a wedding buffet|Biryani=44|Paneer=16|Chaat=14|Gulab jamun=14|Naan=12",
+"Name a sweet you always see at festival time|Gulab jamun=28|Ladoo=24|Barfi=16|Kaju katli=14|Jalebi=11|Sevaiyan=7",
+"Name something elders say brings bad luck|Cutting nails at night=30|Black cat crossing your path=26|Sneezing before you leave=18|A broken mirror=14|Shaking your legs=12",
+"Name something people bring back from home in their suitcase|Spices=30|Pickles=22|Mithai=18|Clothes=16|Medicine=8|Snacks=6",
+"Name a place where desis always haggle|Street market=40|Auto rickshaw=30|Vegetable seller=16|Tailor=8|Car dealer=6",
+"Name a game played at a desi family party|Antakshari=42|Cards=24|Carrom=14|Housie=12|Ludo=8",
+"Name something a desi dad watches on TV|The news=44|Cricket=30|Old movies=12|Stock market=8|Documentaries=6",
+"Name something people shout at the TV during a cricket match|Out!=32|Six!=26|Howzat!=18|Run!=12|No ball!=8|Catch it!=4",
+"Name a way a desi mom saves money|Bargaining=30|Coupons=26|Reusing containers=18|Buying in bulk=16|Making it at home=10",
+"Name the first thing aunties notice when you walk in|Your clothes=34|Your jewellery=26|Your hair=16|Who you came with=14|Whether you touched their feet=10",
+"Name something you make in a pressure cooker|Dal=50|Rice=20|Chole=14|Meat=10|Khichdi=6",
+"Name something you have with chai|Biscuits=44|Rusk=22|Pakora=16|Samosa=12|Gossip=6",
+"Name a topic an uncle corners you about at a party|Your career=36|Politics=24|Stocks=16|Real estate=14|Your car=10",
+"Name a smell that says you're in a desi home|Tadka=38|Incense=22|Fried onions=18|Cardamom chai=12|Ghee=10",
+"Name something the bride's family stresses about|The food=36|The budget=26|The guest list=16|The in-laws=12|The weather=10",
+"Name something desi parents say when you ask for something|We'll see=34|Ask your father=28|Does money grow on trees?=20|When I was your age=12|No=6",
+"Name something guests refuse twice before accepting|Food=40|Chai=30|An envelope of cash=16|Leftovers to take home=8|A ride home=6",
+"Name something that only comes out when guests arrive|The good cups=44|The nice towels=20|The sofa without its cover=14|The good biscuits=12|Air freshener=10",
+"Name something people fight over at the end of dinner|Paying the bill=70|The last piece=14|Taking leftovers=9|Washing up=7",
+"Name a street food you can never say no to|Pani puri=36|Chaat=20|Vada pav=14|Kathi roll=11|Bhel puri=10|Jhalmuri=9",
+"Name a musical instrument you hear at a desi wedding|Dhol=50|Tabla=20|Harmonium=14|Shehnai=11|Sitar=5",
+"Name something kids get told to perform for guests|Sing a song=40|Recite a poem=22|Dance=18|Play an instrument=12|Say hello properly=8",
+"Name an excuse for leaving a family function early|Work tomorrow=40|The kids are tired=26|It's a long drive=16|I have a headache=12|Another function=6",
+"Name something elders do on a video call|Hold the phone too close=36|Show only their forehead=26|Shout=18|Ask if you've eaten=13|Hang up by mistake=7",
+"Name something forwarded on the family WhatsApp group|Good morning pictures=42|Health tips=22|Fake news=16|Jokes=12|Baby photos=8",
+"Name something a desi mom uses as a weapon|Chappal=48|Belan=20|Wooden spoon=12|The look=12|Hanger=8",
+"Name something your mom hides from guests|The good chocolates=30|The mess=28|Dirty dishes=16|Imported biscuits=14|The good perfume=12",
+"Name something desis keep covered in plastic|The remote=40|The sofa=28|The dining table=14|The new mattress=10|The car seats=8",
+"Name something a desi dad complains about at home|The electricity bill=38|The AC being on=26|Lights left on=18|The water heater=10|Too much takeout=8",
+"Name a reason a desi mom calls you at work|Did you eat?=42|Where are you?=22|Gossip=16|Tech problem=12|A wedding invite=8",
+"Name something desi parents say about your friends|Bad influence=36|Who are their parents?=26|Why so many friends?=16|Their marks are better=14|Are they desi?=8",
+"Name something a desi kid is told before a party|Behave yourself=34|Don't ask for food=26|Say hello to everyone=20|Don't touch anything=12|Don't embarrass me=8",
+"Name a place a desi mom hides cash|Inside a saree=34|Rice container=24|Under the mattress=20|Old purse=14|Prayer room=8",
+"Name a household item desi parents refuse to replace|The old fridge=32|The old TV=26|The old sofa=18|The old scooter=14|The old mixer=10",
+"Name something you're told not to do after eating|Swim=34|Sleep=30|Drink water=18|Run=12|Bathe=6",
+"Name a reason your mom says you got sick|No sweater=40|Wet hair=22|Cold water=18|Too much phone=12|Outside food=8",
+"Name something every desi grandma does|Feeds you=42|Tells old stories=24|Prays=14|Oils your hair=12|Slips you money=8",
+"Name something a desi grandpa does every morning|Reads the newspaper=44|Goes for a walk=26|Drinks chai=14|Does yoga=10|Listens to the radio=6",
+"Name something you find in a desi bathroom|Lota=44|Bucket and mug=28|Hair oil=14|Soap scraps=8|Old toothbrush=6",
+"Name something you get scolded for at home|Phone use=34|Marks=26|Waking up late=20|Messy room=14|Talking back=6",
+"Name something desi siblings fight over|The remote=34|The front seat=26|The bathroom=16|Mom's attention=14|The phone charger=10",
+"Name something desi parents ask when you come home late|Where were you?=46|Who were you with?=28|Have you eaten?=12|What time is this?=10|Why was your phone off?=4",
+"Name something people do during a power cut|Light candles=34|Go outside=22|Check the neighbours=18|Use a hand fan=16|Tell stories=10",
+"Name something you find on top of a desi fridge|Embroidered cover=36|Medicines=22|Biscuit tin=18|Plastic bags=14|Keys=10",
+"Name something in a desi mom's handbag|Tissues=28|Snacks=24|Vicks=20|Safety pins=16|Old receipts=12",
+"Name something desi parents show off to guests|Your degree=34|Your job title=26|Wedding photos=16|The new car=14|The new kitchen=10",
+"Name an appliance every desi home must have|Mixer grinder=46|Water filter=22|Microwave=14|Deep freezer=10|Rice cooker=8",
+"Name something you do when elders enter the room|Stand up=36|Greet them=30|Put your phone away=18|Turn down the music=10|Offer your seat=6",
+"Name what you call an elder instead of their name|Uncle=36|Aunty=32|Bhaiya=14|Didi=12|Sir=6",
+"Name something desi parents say about your phone|It ruins your eyes=36|Put it away=28|It's why your marks are low=18|Who are you texting?=12|Fix mine=6",
+"Name something aunties gossip about|Someone's marriage=32|Someone's kids=24|Daughters-in-law=20|Who earns what=14|Who looks older=10",
+"Name something people complain about after a wedding|The food=40|The long wait=22|The loud music=16|The seating=12|The return gifts=10",
+"Name something a groom does at his wedding|Rides a horse=36|Waits around=22|Dances in the baraat=20|Guards his shoes=14|Gets tired=8",
+"Name something the bride's sisters do to the groom|Steal his shoes=56|Ask for money=22|Tease him=14|Block the door=8",
+"Name something inside a wedding gift envelope|Cash=66|Extra one rupee=12|A gold coin=12|A note=10",
+"Name a reason a desi wedding goes over budget|The food=32|The venue=28|Decorations=18|The outfits=14|The guest list=8",
+"Name something hidden or drawn in bridal mehndi|The groom's name=56|Peacocks=18|Flowers=14|Paisleys=8|A love note=4",
+"Name something you do at a sangeet|Dance=46|Sing=24|Eat=14|Show off rehearsals=10|Tease the couple=6",
+"Name something people take home from a desi wedding|Mithai box=44|Leftovers=20|Return gift=18|Sore feet=10|A headache=8",
+"Name something people exaggerate on a marriage biodata|Height=34|Salary=28|Cooking skills=18|Hobbies=12|Age=8",
+"Name something a baraat always has|A dhol=38|A horse=26|Dancing uncles=20|Fireworks=10|A late start=6",
+"Name something you can count on at a desi party|Too much food=38|A late start=26|Loud music=16|Gossip=12|Uncles on politics=8",
+"Name something you borrow from your mom for a function|Jewellery=44|A saree=28|A dupatta=14|Perfume=8|Her purse=6",
+"Name something that goes wrong with a saree|It comes undone=38|You trip on it=28|Pins fall out=16|Pleats go uneven=12|It gets stained=6",
+"Name something packed in a desi school lunchbox|Paratha=38|Roti sabzi=26|Rice=14|Sandwich=12|Achar=10",
+"Name a food that makes your lunchbox smell|Achar=30|Fish=26|Egg curry=18|Onion paratha=16|Dal=10",
+"Name a dish made with potatoes|Aloo paratha=30|Samosa=26|Aloo gobi=16|Vada pav=14|Dum aloo=14",
+"Name a desi breakfast|Paratha=34|Poha=20|Idli=18|Halwa puri=16|Upma=12",
+"Name a dish from South India|Dosa=44|Idli=24|Sambar=14|Appam=10|Uttapam=8",
+"Name a food that tastes better eaten with your hands|Biryani=30|Rice and dal=26|Roti=20|Mango=14|Pani puri=10",
+"Name a lentil or bean dish|Chana masala=30|Dal makhani=26|Rajma=22|Sambar=12|Dal tadka=10",
+"Name something that goes into a tadka|Cumin=34|Garlic=26|Mustard seeds=20|Curry leaves=14|Dried chillies=6",
+"Name something you reach for after food that's too spicy|Water=36|Yogurt=28|Milk=16|Sugar=12|Mithai=8",
+"Name a sweet from Bengal|Rasgulla=38|Sandesh=26|Mishti doi=22|Cham cham=8|Pantua=6",
+"Name a dessert served cold|Kulfi=38|Kheer=24|Falooda=18|Rasmalai=14|Shrikhand=6",
+"Name something you crave during the monsoon|Pakora=42|Roasted corn=24|Chai=18|Khichdi=10|Hot jalebi=6",
+"Name something you bring on a long train journey|Home-cooked food=38|Cards=18|Chain and lock=16|Water bottle=16|Pillow=12",
+"Name a drink sold at the roadside|Sugarcane juice=40|Cutting chai=30|Coconut water=16|Jaljeera=8|Soda=6",
+"Name a pickle you'd find in a jar|Mango=54|Lime=20|Chilli=12|Mixed=8|Garlic=6",
+"Name a meat dish at a desi restaurant|Butter chicken=36|Tandoori chicken=24|Seekh kebab=16|Nihari=14|Rogan josh=10",
+"Name a vegetarian dish at a desi restaurant|Palak paneer=32|Paneer tikka=26|Chana masala=18|Malai kofta=14|Dal makhani=10",
+"Name the first dish every desi student learns to cook|Maggi=46|Dal=20|Omelette=16|Khichdi=12|Rice=6",
+"Name something always on a desi restaurant table|Onions and lemon=34|Mint chutney=28|Pickle=18|Paper napkins=12|Papad=8",
+"Name something you get at the end of a desi restaurant meal|Saunf=44|Mints=24|A paan=16|The bill=10|Hot towel=6",
+"Name something you stuff into a paratha|Aloo=48|Paneer=20|Gobi=14|Mooli=10|Keema=8",
+"Name a dish that takes all day to cook|Biryani=38|Nihari=24|Haleem=18|Dal makhani=12|Rogan josh=8",
+"Name something you always buy at a desi grocery store|Atta=28|Rice=24|Spices=20|Frozen parathas=16|Paneer=12",
+"Name a snack packet found in every desi home|Bhujia=36|Mixture=22|Banana chips=18|Kurkure=16|Chakli=8",
+"Name something you give someone with a bad stomach|Khichdi=38|Curd rice=24|ORS=16|Ajwain water=14|Banana=8",
+"Name something desi moms measure by feel|Salt=44|Spices=28|Water for the rice=16|Ghee=8|Sugar=4",
+"Name something that always happens in a Bollywood movie|A song in the rain=32|Long-lost siblings=26|Dancing in Switzerland=18|The mother cries=14|The villain's big speech=10",
+"Name something a Bollywood hero does|Beats up ten men=42|Dances perfectly=22|Wins over her father=18|Runs in slow motion=12|Cries to his mother=6",
+"Name something that happens in a saas-bahu serial|Dramatic zoom=38|An evil plot=24|Someone returns from the dead=18|A slap=12|Thunder=8",
+"Name a TV show everyone watched growing up|Shaktimaan=36|Ramayan=24|Malgudi Days=18|Dekh Bhai Dekh=12|Surabhi=10",
+"Name a game kids play in the gully|Cricket=48|Gilli danda=18|Kho kho=14|Kabaddi=12|Pithu=8",
+"Name something you do on Diwali|Light diyas=40|Burst crackers=26|Eat mithai=16|Clean the house=12|Play cards=6",
+"Name something you do on Holi|Throw colours=54|Use water guns=20|Drink thandai=12|Eat gujiya=8|Scrub for days=6",
+"Name something you do on Eid|Give Eidi=30|Hug everyone=26|Eat sevaiyan=22|Wear new clothes=14|Go to prayers=8",
+"Name something you need for kite flying|Manjha=40|A kite=24|A rooftop=18|A firki=12|A good wind=6",
+"Name a language spoken across South Asia|Hindi=36|Urdu=18|Bengali=18|Tamil=16|Punjabi=12",
+"Name a city where every desi has a cousin|Toronto=30|London=26|New Jersey=20|Dubai=16|Sydney=8",
+"Name a job people assume every desi does abroad|Software engineer=44|Doctor=24|Cab driver=12|Shop owner=12|Motel owner=8",
+"Name a country desis move to|USA=34|Canada=26|UK=20|UAE=14|Australia=6",
+"Name something you do in a desi traffic jam|Honk=48|Complain=18|Switch lanes=14|Buy snacks at the window=10|Argue=10",
+"Name something you see on a desi road|Cows=38|Auto rickshaws=28|Potholes=16|Five people on one bike=12|Street dogs=6",
+"Name something an auto rickshaw driver says|Meter's broken=36|Not going there=30|Double the fare=20|Traffic is bad=10|Sit, sit=4",
+"Name something people say when they're running late|Five more minutes=38|I'm on my way=32|Stuck in traffic=18|Almost there=12",
+"Name something that makes a desi goodbye take an hour|One more chai=34|Talking at the door=26|One last story=20|Packing leftovers=14|Finding shoes=6",
+"Name a way a desi uncle shows he's rich|Big car=36|Gold watch=24|Foreign trips=18|Big house=14|Loud phone calls=8",
+"Name a trick desis use to pay less|Ask for a discount=38|Pretend to walk away=30|Say they know the owner=18|Compare prices=14",
+"Name something you use to keep mosquitoes away|Mosquito net=32|Coil=28|Electric bat=18|Repellent cream=14|Closed windows=8",
+"Name a complaint about your tailor|It's late=38|It doesn't fit=30|Wrong design=16|Lost fabric=8|Charged extra=8",
+"Name something a shopkeeper offers while you browse|Chai=34|A discount=28|A cold drink=18|A better piece=14|A seat=6",
+"Name something you find at a desi barbershop|Head massage=40|Film posters=24|Old newspapers=16|Cricket on TV=14|Long gossip=6",
+"Name something a desi school teacher says|Is this a fish market?=36|Silence!=24|Bring your parents=18|Worst batch ever=16|Stand outside=6",
+"Name something found in every school bag|Tiffin=34|Geometry box=26|Notebooks=20|Water bottle=14|Eraser=6",
+"Name the subject desi parents care about most|Maths=56|Science=28|English=10|Computers=4|Hindi=2",
+"Name something you do the night before an exam|Cram=36|Pray=28|Panic=18|Eat curd and sugar=12|Call a friend=6",
+"Name a reward for good exam results|A new phone=32|Eating out=26|A bike=18|Cash=14|More tuition=10",
+"Name a sport desis love besides cricket|Hockey=32|Kabaddi=28|Football=22|Badminton=12|Squash=6",
+"Name something that happens in a gully cricket match|Ball over the wall=34|Arguing over an out=28|A broken window=20|One-bounce catch rule=12|Neighbour yells=6",
+"Name something you do when your cricket team loses|Blame the captain=34|Turn off the TV=28|Go silent=18|Blame the umpire=12|Swear off cricket=8"
+].map(parse);
+
+const FAST = [
+"Name a spice that goes in chai|Cardamom=40|Ginger=32|Cloves=12|Cinnamon=9|Black pepper=5",
+"Name a desi bread|Naan=36|Roti=30|Paratha=20|Puri=9|Kulcha=5",
+"Name something worn at a desi wedding|Saree=34|Sherwani=24|Lehenga=22|Bangles=12|Turban=8",
+"Name a chutney flavour|Mint=38|Tamarind=30|Coconut=16|Mango=10|Tomato=6",
+"Name a rice dish|Biryani=52|Pulao=24|Khichdi=14|Lemon rice=6|Curd rice=4",
+"Name a Hindi film everyone has seen|Sholay=34|Dilwale Dulhania Le Jayenge=26|3 Idiots=18|Kabhi Khushi Kabhie Gham=14|Lagaan=8",
+"Name what you call an aunt or uncle|Chacha=30|Mama=26|Mausi=18|Bua=14|Khala=12",
+"Name a fruit desis go wild for|Mango=76|Guava=9|Lychee=7|Jackfruit=5|Pomegranate=3",
+"Name a festival everyone waits for|Diwali=40|Eid=30|Holi=16|Navratri=8|Pongal=6",
+"Name a spice every desi kitchen keeps|Turmeric=34|Cumin=26|Chilli powder=20|Garam masala=14|Coriander=6",
+"Name something painted or hung on a truck|Horn OK Please=44|Lemon and chillies=22|Evil eye=14|Flowers=12|Peacock=8",
+"Name a wedding event|Mehndi=34|Sangeet=30|Baraat=20|Haldi=12|Reception=4",
+"Name a cold drink for a hot day|Lassi=44|Nimbu pani=26|Rooh Afza=12|Falooda=10|Thandai=8",
+"Name something in a desi kitchen you'd cook with|Pressure cooker=42|Tawa=28|Kadai=18|Belan=8|Chimta=4"
+].map(parse);
+
+function parse(line) {
+  const [q, ...rest] = line.split("|");
+  return { q, a: rest.map(r => { const [t, p] = r.split("="); return { t, p: +p }; }) };
+}
+
+/* All questions share one long order, and each game takes the next stretch of it, so nothing
+   comes back until the order runs out. The code holds that position, so the host's phone shows
+   the same game with no server. */
+const POOL = [...BANK, ...FAST];
+const FAST_QS = 5;
+const CODE_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZ";
+const CYCLES = Math.floor(CODE_LETTERS.length ** 3 / POOL.length);
+const needed = rounds => rounds + FAST_QS * 2;
+function makeCode(rounds, cycle, pos) {
+  let v = cycle * POOL.length + pos, c = "";
+  for (let i = 0; i < 3; i++) { c = CODE_LETTERS[v % CODE_LETTERS.length] + c; v = Math.floor(v / CODE_LETTERS.length); }
+  return rounds + c;
+}
+function readCode(c) {
+  let v = 0;
+  for (const ch of c.slice(1)) v = v * CODE_LETTERS.length + CODE_LETTERS.indexOf(ch);
+  return { rounds: +c[0], cycle: Math.floor(v / POOL.length), pos: v % POOL.length };
+}
+function validCode(c) {
+  if (!/^[357][ABCDEFGHJKMNPQRSTUVWXYZ]{3}$/.test(c)) return false;
+  const { rounds, cycle, pos } = readCode(c);
+  return cycle < CYCLES && pos + needed(rounds) <= POOL.length;
+}
+function shuffled(list, code, salt) {
+  let h = 2166136261 ^ salt;
+  for (const ch of code) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
+  const rand = () => {
+    h |= 0; h = h + 0x6D2B79F5 | 0;
+    let t = Math.imul(h ^ h >>> 15, 1 | h);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+  const out = list.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+function gameFor(code) {
+  const { rounds: n, cycle, pos } = readCode(code);
+  const qs = shuffled(POOL, "desi", cycle).slice(pos, pos + needed(n));
+  return { rounds: qs.slice(0, n), fast: [qs.slice(n, n + FAST_QS), qs.slice(n + FAST_QS)] };
+}
+function multiplier(round, total) {
+  if (round === total - 1) return 3;
+  if (round === total - 2) return 2;
+  return 1;
+}
+
+const FAST_GOAL = 200, SAVE_KEY = "desi-feud-v4", USED_KEY = "desi-feud-used-v3";
+const FAST_TIME = { ready: 20, p1: 20, ready2: 25, p2: 25 };
+let S = { screen: "start", roundsChoice: 5, names: ["Team Chai", "Team Samosa"] };
+let G = null, undoStack = [], builtKey = "", timer = null, fastHold = null, sound = true, keyView = null;
+const app = document.getElementById("app");
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const chappal = cls => `<svg class="${cls || ""}" viewBox="0 0 60 112" role="img" aria-label="Chappal">
+  <path d="M30 4C46 4 54 18 52 38c-2 16-8 24-8 40 0 18-6 30-15 30S15 96 15 80c0-16-8-24-9-42C5 18 14 4 30 4z" fill="#f6a90f" stroke="#1b1320" stroke-width="3"/>
+  <path d="M30 30 11 58M30 30l19 28" stroke="#e01e72" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <circle cx="30" cy="30" r="5" fill="#1b1320"/></svg>`;
+
+function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+function saved() {
+  try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); return s && s.code && s.screen !== "end" && s.screen !== "start" ? s : null; }
+  catch (e) { return null; }
+}
+function used() {
+  try { const u = JSON.parse(localStorage.getItem(USED_KEY)); if (u && u.cycle >= 0 && u.pos >= 0) return u; } catch (e) {}
+  return { cycle: Math.floor(Math.random() * CYCLES), pos: 0 };
+}
+function setUsed(u) { try { localStorage.setItem(USED_KEY, JSON.stringify(u)); } catch (e) {} }
+function snap() { undoStack.push(JSON.stringify(S)); if (undoStack.length > 40) undoStack.shift(); }
+function undo() {
+  if (!undoStack.length) return;
+  stopTimer(); clearHold();
+  S = JSON.parse(undoStack.pop());
+  builtKey = "";
+  render();
+}
+
+/* Sound */
+let ctx = null;
+function tone(freq, start, dur, type, vol) {
+  if (!sound) return;
+  try {
+    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === "suspended") ctx.resume();
+    const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + start;
+    o.type = type || "triangle"; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol || .22, t);
+    g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur);
+  } catch (e) {}
+}
+const sfx = {
+  reveal() { tone(659, 0, .28); tone(988, .1, .45); },
+  strike() { tone(110, 0, .55, "sawtooth", .3); tone(116, 0, .55, "square", .14); },
+  award() { [523, 587, 659, 784, 880, 1047].forEach((f, i) => tone(f, i * .09, .3)); },
+  time() { tone(220, 0, .8, "square", .2); }
+};
+
+/* Music: a dhol groove under a harmonium line, built here in the browser so there are no audio
+   files or rights to worry about. It picks up speed for Jaldi Jaldi. */
+const GROOVE = "D..tD.t.D..tD.tt";
+const TUNE = [330,0,0,392,440,0,392,0, 330,0,294,0,262,0,0,0, 294,0,330,0,392,0,440,0, 523,0,440,392,330,0,0,0,
+  392,0,440,0,523,0,440,0, 392,0,330,0,294,0,0,0, 262,0,294,0,330,0,392,0, 294,0,262,0,220,0,0,0];
+const MUSIC_BPM = { main: 112, fast: 150 };
+let musicOn = true, musicBus = null, musicTimer = null, musicStep = 0, musicNext = 0;
+function drum(from, to, dur, vol, t, type) {
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = type; o.frequency.setValueAtTime(from, t); o.frequency.exponentialRampToValueAtTime(to, t + dur);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  o.connect(g).connect(musicBus); o.start(t); o.stop(t + dur);
+}
+function reed(freq, t, dur) {
+  const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+  o.type = "sawtooth"; o.frequency.value = freq;
+  f.type = "lowpass"; f.frequency.value = 1100;
+  g.gain.setValueAtTime(.001, t); g.gain.linearRampToValueAtTime(.16, t + .03); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  o.connect(f).connect(g).connect(musicBus); o.start(t); o.stop(t + dur);
+}
+function musicTick() {
+  const step = 60 / (S.screen === "fast" ? MUSIC_BPM.fast : MUSIC_BPM.main) / 4;
+  musicNext = Math.max(musicNext, ctx.currentTime);
+  while (musicNext < ctx.currentTime + .3) {
+    const beat = GROOVE[musicStep % GROOVE.length], note = TUNE[musicStep % TUNE.length];
+    if (beat === "D") drum(130, 55, .22, .55, musicNext, "sine");
+    if (beat === "t") drum(520, 300, .06, .16, musicNext, "triangle");
+    if (note) reed(note, musicNext, step * 2.6);
+    musicNext += step; musicStep++;
+  }
+}
+function syncMusic() {
+  const want = musicOn && ["game", "fast", "end"].includes(S.screen);
+  if (want && !musicTimer) {
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === "suspended") ctx.resume();
+      if (!musicBus) { musicBus = ctx.createGain(); musicBus.gain.value = .3; musicBus.connect(ctx.destination); }
+      musicStep = 0; musicNext = ctx.currentTime + .05;
+      musicTimer = setInterval(musicTick, 100);
+      musicTick();
+    } catch (e) {}
+  } else if (!want && musicTimer) { clearInterval(musicTimer); musicTimer = null; }
+}
+
+/* Round logic */
+const round = () => G.rounds[S.round];
+const mult = () => multiplier(S.round, S.total);
+function allShown() { return S.revealed.length === round().a.length; }
+
+function startGame(names, n) {
+  const u = used();
+  S = { screen: "game", code: makeCode(n, u.cycle, u.pos), total: n, names, scores: [0, 0], round: 0, gain: null, fast: null };
+  setUsed({ cycle: u.cycle, pos: u.pos + needed(n) });
+  resetRound();
+  G = gameFor(S.code);
+  undoStack = []; builtKey = "";
+  render();
+}
+function resetRound() {
+  Object.assign(S, { revealed: [], strikes: 0, control: null, phase: "faceoff", pot: 0, gain: null, note: "" });
+}
+function reveal(i) {
+  if (S.screen !== "game" || i >= round().a.length || S.revealed.includes(i)) return;
+  snap();
+  S.revealed.push(i);
+  sfx.reveal();
+  if (S.phase !== "over") {
+    S.pot += round().a[i].p;
+    if (S.phase === "steal") award(1 - S.control, true);
+    else if (allShown() && S.control !== null) award(S.control, false);
+  }
+  render();
+}
+function setControl(t) {
+  if (S.screen !== "game" || S.phase !== "faceoff") return;
+  snap();
+  S.control = t; S.phase = "play";
+  if (allShown()) award(t, false);
+  render();
+}
+function strike() {
+  if (S.screen !== "game" || S.phase === "over") return;
+  snap();
+  sfx.strike();
+  if (S.phase === "faceoff") { throwChappals(1); render(); return; }
+  if (S.phase === "steal") { throwChappals(1); award(S.control, false, true); render(); return; }
+  S.strikes++;
+  throwChappals(S.strikes);
+  if (S.strikes === 3) S.phase = "steal";
+  render();
+}
+function award(team, stolen, failed) {
+  const pts = S.pot * mult();
+  S.scores[team] += pts;
+  S.gain = { team, pts, stolen: !!stolen, failed: !!failed };
+  S.phase = "over";
+  setTimeout(sfx.award, 350);
+}
+function revealRest() {
+  if (S.screen !== "game" || S.phase !== "over") return;
+  const rest = round().a.map((_, i) => i).filter(i => !S.revealed.includes(i));
+  if (!rest.length) return;
+  snap();
+  S.missed = rest;
+  S.revealed.push(...rest);
+  sfx.reveal();
+  render();
+}
+function nextRound() {
+  if (S.screen !== "game" || S.phase !== "over") return;
+  snap();
+  S.missed = [];
+  if (S.round + 1 < S.total) { S.round++; resetRound(); }
+  else startFast();
+  builtKey = "";
+  render();
+}
+function startFast() {
+  const [a, b] = S.scores;
+  S.screen = "fast";
+  S.fast = {
+    team: a === b ? null : (a > b ? 0 : 1), stage: "ready", q: 0, left: FAST_TIME.ready,
+    picks: [0, 1].map(() => Array(FAST_QS).fill(null))
+  };
+}
+const fastLive = () => S.fast.stage === "p1" || S.fast.stage === "p2";
+const fastPlayer = () => S.fast.stage === "ready" || S.fast.stage === "p1" ? 0 : 1;
+function fastPoints(pl) {
+  return S.fast.picks[pl].reduce((sum, pick, i) => sum + (pick === null || pick < 0 ? 0 : G.fast[pl][i].a[pick].p), 0);
+}
+function fastTotal() { return fastPoints(0) + fastPoints(1); }
+function stopTimer() { if (timer) clearInterval(timer); timer = null; }
+function clearHold() { clearTimeout(fastHold); fastHold = null; }
+function runTimer() {
+  stopTimer();
+  timer = setInterval(() => {
+    if (fastHold) return;
+    S.fast.left--; save();
+    if (S.fast.left <= 0) { stopTimer(); sfx.time(); }
+    syncFast();
+  }, 1000);
+}
+function fastGo(stage) {
+  snap(); stopTimer();
+  Object.assign(S.fast, { stage, q: 0, left: FAST_TIME[stage] });
+  render();
+}
+function pickFast(i) {
+  if (S.screen !== "fast" || S.fast.team === null || !fastLive() || fastHold) return;
+  const f = S.fast, pl = fastPlayer();
+  if (f.picks[pl][f.q] !== null || i >= G.fast[pl][f.q].a.length) return;
+  snap();
+  f.picks[pl][f.q] = i;
+  if (i < 0) sfx.strike(); else sfx.reveal();
+  render();
+}
+/* The clock stops while the answer shows, so a slow flip doesn't cost the player time. */
+function holdThenAdvance() {
+  const f = S.fast, pick = f.picks[fastPlayer()][f.q];
+  fastHold = setTimeout(() => {
+    fastHold = null;
+    if (f.q + 1 < FAST_QS && f.left > 0) f.q++;
+    else {
+      stopTimer();
+      Object.assign(f, f.stage === "p1" ? { stage: "ready2", q: 0, left: FAST_TIME.ready2 } : { stage: "done" });
+      if (f.stage === "done") sfx.award();
+    }
+    render();
+  }, pick < 0 ? 500 : 900);
+}
+function finish() {
+  snap(); stopTimer();
+  S.screen = "end"; builtKey = ""; render();
+}
+
+/* Strike animation */
+let fxTimer;
+function throwChappals(n) {
+  const fx = $("fx");
+  fx.innerHTML = chappal().repeat(n);
+  fx.hidden = false;
+  clearTimeout(fxTimer);
+  fxTimer = setTimeout(() => { fx.hidden = true; fx.innerHTML = ""; }, 1150);
+}
+
+/* Screens */
+function render() {
+  if (S.screen !== "start") save();
+  syncMusic();
+  if (S.screen === "start") renderStart();
+  else if (S.screen === "game") renderGame();
+  else if (S.screen === "fast") renderFast();
+  else if (S.screen === "end") renderEnd();
+}
+
+function renderStart() {
+  if (keyView) return renderKey();
+  builtKey = "";
+  const resume = saved(), u = used(), left = POOL.length - u.pos, enough = left >= needed(S.roundsChoice);
+  app.innerHTML = `<div class="start">
+    <section>
+      <h1 class="logo">Desi Feud</h1>
+      <p class="tag">We asked 100 aunties. They had opinions.</p>
+      <p class="how">Two teams guess the most popular answers. Three wrong guesses and the other team can steal the points. The leading team plays Jaldi Jaldi at the end, a bonus round with a goal of ${FAST_GOAL}.</p>
+      <div class="sample">
+        <p>Sample: Name what you take off before entering a desi home</p>
+        <div class="tiles">${tileHTML(0, { t: "Shoes", p: 86 }, true)}${tileHTML(1, { t: "", p: 0 }, false)}</div>
+      </div>
+    </section>
+    <form class="form" id="setup">
+      <h2>New game</h2>
+      <div class="pair">
+        <div class="field"><label for="t0">First team</label><input id="t0" maxlength="22" value="${esc(S.names[0])}"></div>
+        <div class="field"><label for="t1">Second team</label><input id="t1" maxlength="22" value="${esc(S.names[1])}"></div>
+      </div>
+      <div class="field"><span class="legend">Rounds</span>
+        <div class="seg">${[3, 5, 7].map(n => `<button type="button" class="btn" data-n="${n}" aria-pressed="${n === S.roundsChoice}">${n} rounds</button>`).join("")}</div>
+      </div>
+      <button class="btn primary" type="submit"${enough ? "" : " disabled"}>Start the game</button>
+      <p class="left">${enough
+        ? `${left} of ${POOL.length} questions unplayed on this device.`
+        : `Only ${left} unplayed questions left, and ${S.roundsChoice} rounds needs ${needed(S.roundsChoice)}.`}</p>
+      ${enough ? "" : `<button class="btn" type="button" id="reuse">Start over with all ${POOL.length} (questions will repeat)</button>`}
+      ${resume ? `<button class="btn" type="button" id="resume">Resume ${esc(resume.names[0])} vs ${esc(resume.names[1])}</button>` : ""}
+      <hr class="divider">
+      <div class="keyrow">
+        <div class="field"><label for="kc">Host on a phone? Enter the game code</label><input id="kc" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="5KTP"></div>
+        <button class="btn" type="button" id="openkey">Open answers</button>
+      </div>
+      <p class="err" id="kerr" role="alert"></p>
+    </form>
+  </div>`;
+  $("setup").addEventListener("submit", e => {
+    e.preventDefault();
+    if (!enough) return;
+    const names = [$("t0").value.trim() || "Team Chai", $("t1").value.trim() || "Team Samosa"];
+    startGame(names, S.roundsChoice);
+  });
+  app.querySelectorAll("[data-n]").forEach(b => b.onclick = () => {
+    S.roundsChoice = +b.dataset.n; S.names = [$("t0").value, $("t1").value]; renderStart();
+  });
+  if (resume) $("resume").onclick = () => { S = resume; G = gameFor(S.code); builtKey = ""; undoStack = []; render(); };
+  if (!enough) $("reuse").onclick = () => {
+    setUsed({ cycle: (u.cycle + 1) % CYCLES, pos: 0 });
+    S.names = [$("t0").value, $("t1").value]; renderStart();
+  };
+  $("openkey").onclick = () => {
+    const c = $("kc").value.trim().toUpperCase();
+    if (!validCode(c)) { $("kerr").textContent = "That code doesn't match. It's four characters, shown at the bottom of the game screen."; return; }
+    keyView = { code: c, tab: 0 };
+    try { navigator.wakeLock && navigator.wakeLock.request("screen").catch(() => {}); } catch (e) {}
+    renderKey();
+  };
+}
+
+function tileHTML(i, a, on) {
+  return `<button class="tile${on ? " on" : ""}" type="button" data-i="${i}" aria-label="Answer ${i + 1}"><span class="flip">
+    <span class="face back"><span class="num">${i + 1}</span></span>
+    <span class="face front"><span class="a">${esc(a.t)}</span><span class="p">${a.p}</span></span>
+  </span></button>`;
+}
+
+function renderGame() {
+  G = G || gameFor(S.code);
+  const key = "g" + S.round;
+  if (builtKey !== key) {
+    builtKey = key;
+    const r = round(), m = mult();
+    let tiles = r.a.map((a, i) => tileHTML(i, a, false)).join("");
+    for (let i = r.a.length; i < 8; i++) tiles += `<div class="tile empty"></div>`;
+    app.innerHTML = `
+      <header class="top"><h1 class="logo">Desi Feud</h1>
+        <div class="roundtag">Round ${S.round + 1} of ${S.total}${m > 1 ? ` <b>Points × ${m}</b>` : ""}</div></header>
+      <main class="stage">
+        ${teamHTML(0)}
+        <section class="board">
+          <p class="q">${esc(r.q)}</p>
+          <div class="meter"><div class="strikes" id="strikes" aria-label="Strikes">${chappal().repeat(3)}</div>
+            <div class="pot" id="pot">0</div><div class="say" id="say" aria-live="polite"></div></div>
+          <div class="tiles" id="tiles">${tiles}</div>
+        </section>
+        ${teamHTML(1)}
+      </main>
+      <footer class="dock" id="dock"></footer>`;
+    $("tiles").onclick = e => { const b = e.target.closest("[data-i]"); if (b) reveal(+b.dataset.i); };
+  }
+  syncGame();
+}
+function teamHTML(t, label) {
+  return `<aside class="team" id="team${t}"><div class="nm">${esc(label || S.names[t])}</div><div class="sc" id="sc${t}">0</div><div class="st" id="st${t}"></div></aside>`;
+}
+function syncGame() {
+  const { phase, control, names } = S;
+  document.querySelectorAll("#tiles [data-i]").forEach(b => {
+    const i = +b.dataset.i;
+    b.classList.toggle("on", S.revealed.includes(i));
+    b.classList.toggle("missed", (S.missed || []).includes(i));
+    b.disabled = S.revealed.includes(i);
+  });
+  document.querySelectorAll("#strikes svg").forEach((s, i) => s.classList.toggle("lit", i < S.strikes));
+  $("pot").textContent = S.pot * mult();
+  [0, 1].forEach(t => {
+    $("sc" + t).textContent = S.scores[t];
+    const active = (phase === "play" && control === t) || (phase === "steal" && control === 1 - t);
+    $("team" + t).classList.toggle("on", active);
+    $("st" + t).textContent = active ? (phase === "steal" ? "Stealing" : "Playing") : "";
+  });
+  const other = control === null ? "" : names[1 - control];
+  let say = "Face-off", hint = "Read the question aloud. Press an answer's number if it's on the board, X if it isn't, then pick who plays.";
+  let btns = `<button class="btn primary" id="a0">${esc(names[0])} plays<kbd>A</kbd></button>
+    <button class="btn primary" id="a1">${esc(names[1])} plays<kbd>L</kbd></button>
+    <button class="btn danger" id="x">Wrong answer<kbd>X</kbd></button>`;
+  if (phase === "play") {
+    say = `${names[control]} plays`;
+    hint = "Press the number for a correct answer. Press X for a wrong one. Three chappals and the other team can steal.";
+    btns = `<button class="btn danger" id="x">Strike<kbd>X</kbd></button>`;
+  } else if (phase === "steal") {
+    say = `${other}, one guess to steal`;
+    hint = "If they guess right, press that answer's number. If they miss, press X and the pot stays with the playing team.";
+    btns = `<button class="btn danger" id="x">Steal missed<kbd>X</kbd></button>`;
+  } else if (phase === "over") {
+    const g = S.gain;
+    say = g.pts === 0 ? "No points this round" : g.stolen ? `${names[g.team]} steal ${g.pts}` : `${names[g.team]} take ${g.pts}`;
+    hint = S.round + 1 < S.total ? "Round done. Show the answers nobody guessed, then move on." : "That was the last round. Show the rest, then go to Jaldi Jaldi.";
+    const label = S.round + 1 < S.total ? "Next round" : "Go to Jaldi Jaldi";
+    btns = `<button class="btn" id="rest"${allShown() ? " disabled" : ""}>Show the rest<kbd>R</kbd></button>
+      <button class="btn primary" id="next">${label}<kbd>N</kbd></button>`;
+  }
+  $("say").textContent = say;
+  $("dock").innerHTML = `<div class="hint">${esc(hint)}</div>${btns}
+    <button class="btn quiet" id="undo">Undo<kbd>U</kbd></button>
+    <button class="btn quiet" id="snd">${sound ? "Sound on" : "Sound off"}<kbd>M</kbd></button>
+    <button class="btn quiet" id="mus">${musicOn ? "Music on" : "Music off"}<kbd>B</kbd></button>
+    <button class="btn quiet" id="full">Full screen<kbd>F</kbd></button>
+    <span class="code">Game code <b>${S.code}</b></span>`;
+  bindDock();
+}
+function bindDock() {
+  const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };
+  on("a0", () => setControl(0)); on("a1", () => setControl(1)); on("x", strike);
+  on("rest", revealRest); on("next", nextRound); on("undo", undo);
+  on("snd", toggleSound); on("mus", toggleMusic); on("full", toggleFull);
+}
+function toggleSound() { sound = !sound; render(); }
+function toggleMusic() { musicOn = !musicOn; render(); }
+function toggleFull() {
+  try {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen().catch(() => {});
+  } catch (e) {}
+}
+
+function renderFast() {
+  const f = S.fast;
+  if (f.team === null) {
+    builtKey = "";
+    app.innerHTML = `<div class="end"><h2>It's a tie</h2><p>Who plays Jaldi Jaldi? Settle it with one quick question.</p>
+      <div class="seg"><button class="btn primary" id="p0">${esc(S.names[0])}</button><button class="btn primary" id="p1">${esc(S.names[1])}</button></div></div>`;
+    [0, 1].forEach(t => $("p" + t).onclick = () => { snap(); f.team = t; render(); });
+    return;
+  }
+  const key = "f" + f.stage + f.q;
+  if (builtKey !== key) {
+    builtKey = key;
+    const done = f.stage === "done", q = fastLive() ? G.fast[fastPlayer()][f.q] : null;
+    let title = `${["First", "Second"][fastPlayer()]} player, you're up`, tiles = `<div class="tile empty"></div>`.repeat(8);
+    if (q) {
+      title = q.q;
+      tiles = q.a.map((a, i) => tileHTML(i, a, false)).join("") + `<div class="tile empty"></div>`.repeat(8 - q.a.length);
+    } else if (done) {
+      title = `${S.names[f.team]} scored ${fastTotal()} of ${FAST_GOAL}`;
+      tiles = [0, 1].flatMap(pl => f.picks[pl].map((pick, i) => {
+        const a = pick === null || pick < 0 ? { t: "No answer", p: 0 } : G.fast[pl][i].a[pick];
+        return tileHTML(pl * FAST_QS + i, a, true);
+      })).join("");
+    }
+    app.innerHTML = `
+      <header class="top"><h1 class="logo">Desi Feud</h1>
+        <div class="roundtag">Jaldi Jaldi for ${esc(S.names[f.team])} <b>Bonus goal ${FAST_GOAL}</b></div></header>
+      <main class="stage">
+        ${teamHTML(0, "First player")}
+        <section class="board">
+          <p class="q">${esc(title)}</p>
+          <div class="meter"><div class="clock" id="clock"></div>
+            <div class="pot" id="pot">0</div><div class="say" id="say" aria-live="polite"></div></div>
+          <div class="tiles${done ? " ten" : ""}" id="tiles">${tiles}</div>
+        </section>
+        ${teamHTML(1, "Second player")}
+      </main>
+      <footer class="dock" id="dock"></footer>`;
+    $("tiles").onclick = e => { const b = e.target.closest("[data-i]"); if (b) pickFast(+b.dataset.i); };
+    if (done) document.querySelectorAll("#tiles [data-i]").forEach(b => {
+      const i = +b.dataset.i, pick = f.picks[Math.floor(i / FAST_QS)][i % FAST_QS];
+      b.disabled = true; b.classList.toggle("missed", pick === null || pick < 0);
+    });
+  }
+  syncFast();
+  if (fastLive() && f.left > 0) { if (!timer) runTimer(); } else stopTimer();
+  if (fastLive() && f.picks[fastPlayer()][f.q] !== null && !fastHold) holdThenAdvance();
+}
+function syncFast() {
+  const f = S.fast, live = fastLive(), pl = fastPlayer(), pick = live ? f.picks[pl][f.q] : null, timeUp = live && f.left <= 0;
+  if (live) document.querySelectorAll("#tiles [data-i]").forEach(b => {
+    const i = +b.dataset.i;
+    b.classList.toggle("on", i === pick);
+    b.disabled = pick !== null;
+  });
+  const c = $("clock");
+  c.textContent = f.stage === "done" ? "" : f.left;
+  c.classList.toggle("low", live && f.left <= 5);
+  $("pot").textContent = `${fastTotal()} / ${FAST_GOAL}`;
+  [0, 1].forEach(t => {
+    $("sc" + t).textContent = fastPoints(t);
+    const active = live && pl === t;
+    $("team" + t).classList.toggle("on", active);
+    $("st" + t).textContent = active ? "Playing" : "";
+  });
+  const say = f.stage === "done" ? (fastTotal() >= FAST_GOAL ? "Goal reached" : "Short of the goal")
+    : !live ? "" : pick === -1 ? "Not on the board" : timeUp ? "Time's up" : `Question ${f.q + 1} of ${FAST_QS}`;
+  if ($("say").textContent !== say) $("say").textContent = say;
+  const dock = $("dock"), dockKey = [f.stage, timeUp, sound, musicOn].join();
+  if (dock.dataset.key === dockKey) return;
+  dock.dataset.key = dockKey;
+  dock.innerHTML = `<div class="hint">${esc(fastHint(f.stage, timeUp))}</div>${fastButtons(f.stage)}
+    <button class="btn quiet" id="undo">Undo<kbd>U</kbd></button>
+    <button class="btn quiet" id="snd">${sound ? "Sound on" : "Sound off"}<kbd>M</kbd></button>
+    <button class="btn quiet" id="mus">${musicOn ? "Music on" : "Music off"}<kbd>B</kbd></button>
+    <button class="btn quiet" id="full">Full screen<kbd>F</kbd></button>
+    <span class="code">Game code <b>${S.code}</b></span>`;
+  const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };
+  on("undo", undo); on("snd", toggleSound); on("mus", toggleMusic); on("full", toggleFull);
+  on("go1", () => fastGo("p1"));
+  on("go2", () => fastGo("p2"));
+  on("miss", () => pickFast(-1));
+  on("fin", finish); on("skip", finish);
+}
+function fastHint(s, timeUp) {
+  if (timeUp) return "Time's up. If they answered in time, press that answer's number. If not, press X.";
+  return {
+    ready: `Five questions in ${FAST_TIME.p1} seconds. Press an answer's number when they say it, or X if it isn't on the board. Answers are on your phone.`,
+    p1: "Press the answer's number, or X if it isn't on the board. The next question comes up by itself.",
+    ready2: `Five new questions in ${FAST_TIME.p2} seconds. Same as before.`,
+    p2: "Press the answer's number, or X if it isn't on the board. The next question comes up by itself.",
+    done: "That's Jaldi Jaldi. It's a bonus, so the main rounds decide the winner."
+  }[s];
+}
+function fastButtons(s) {
+  const miss = `<button class="btn danger" id="miss">Not on the board<kbd>X</kbd></button>`;
+  return {
+    ready: `<button class="btn primary" id="go1">Start ${FAST_TIME.p1} seconds</button><button class="btn quiet" id="skip">Skip to results</button>`,
+    p1: miss,
+    ready2: `<button class="btn primary" id="go2">Start ${FAST_TIME.p2} seconds</button>`,
+    p2: miss,
+    done: `<button class="btn primary" id="fin">Finish the game</button>`
+  }[s];
+}
+
+function renderEnd() {
+  builtKey = "end";
+  const [a, b] = S.scores, f = S.fast;
+  const played = f && f.stage === "done", hit = played && fastTotal() >= FAST_GOAL;
+  const lead = a === b ? (f && f.team !== null ? f.team : null) : (a > b ? 0 : 1);
+  const line = played
+    ? `${S.names[f.team]} scored ${fastTotal()} in Jaldi Jaldi${hit ? " and reached the " + FAST_GOAL + " goal." : ", short of the " + FAST_GOAL + " goal."}`
+    : "";
+  app.innerHTML = `<canvas id="petals" aria-hidden="true"></canvas><div class="end">
+    <h2>${lead === null ? "A perfect tie" : esc(S.names[lead]) + " win"}</h2>
+    <p>${esc(S.names[0])} ${a}, ${esc(S.names[1])} ${b}.</p>${line ? `<p>${esc(line)}</p>` : ""}
+    <p>The aunties approve. For now.</p>
+    <button class="btn primary" id="again">Play again</button></div>`;
+  $("again").onclick = () => {
+    const names = S.names;
+    S = { screen: "start", roundsChoice: 5, names }; G = null; undoStack = []; try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+    render();
+  };
+  sfx.award();
+  petals();
+}
+function petals() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = $("petals"), x = c.getContext("2d");
+  const W = c.width = innerWidth, H = c.height = innerHeight;
+  const cols = ["#f6a90f", "#e01e72", "#fff3d6", "#e2401f"];
+  const ps = Array.from({ length: 140 }, () => ({
+    x: Math.random() * W, y: -Math.random() * H, r: 5 + Math.random() * 7, s: 1.6 + Math.random() * 2.6,
+    d: Math.random() * 6, c: cols[Math.floor(Math.random() * 4)]
+  }));
+  const t0 = performance.now();
+  (function step(t) {
+    if (!c.isConnected || t - t0 > 9000) { if (c.isConnected) x.clearRect(0, 0, W, H); return; }
+    x.clearRect(0, 0, W, H);
+    for (const p of ps) {
+      p.y += p.s; p.d += .03; p.x += Math.sin(p.d);
+      if (p.y > H + 12) p.y = -12;
+      x.save(); x.translate(p.x, p.y); x.rotate(p.d); x.fillStyle = p.c;
+      x.beginPath(); x.ellipse(0, 0, p.r, p.r * .55, 0, 0, 7); x.fill(); x.restore();
+    }
+    requestAnimationFrame(step);
+  })(t0);
+}
+
+function renderKey() {
+  const k = keyView, g = gameFor(k.code), n = g.rounds.length;
+  const tabs = g.rounds.map((_, i) => `<button class="btn" data-t="${i}" aria-pressed="${k.tab === i}">${i + 1}</button>`).join("")
+    + `<button class="btn" data-t="${n}" aria-pressed="${k.tab === n}">Jaldi</button>`;
+  let body;
+  if (k.tab < n) {
+    const r = g.rounds[k.tab], m = multiplier(k.tab, n);
+    body = `<h2>${esc(r.q)}</h2><div class="legend">Round ${k.tab + 1}${m > 1 ? `, points × ${m}` : ""}</div>
+      <ol class="ans">${r.a.map((a, i) => `<li><i>${i + 1}</i><span>${esc(a.t)}</span><em>${a.p}</em></li>`).join("")}</ol>`;
+  } else {
+    body = `<h2>Jaldi Jaldi, bonus goal ${FAST_GOAL}</h2>` + g.fast.map((qs, pl) => `<div class="legend">${["First", "Second"][pl]} player</div>`
+      + qs.map((q, i) => `<div class="fk"><p>${i + 1}. ${esc(q.q)}</p>
+      <small>${q.a.map((a, j) => `<b>${j + 1}</b> ${esc(a.t)} ${a.p}`).join(" · ")}</small></div>`).join("")).join("");
+  }
+  app.innerHTML = `<div class="key">
+    <div class="keytop"><div class="logo">Desi Feud</div><button class="btn quiet" id="kx">Close</button></div>
+    <div class="legend">Host answers for game ${k.code}. Keep this screen to yourself.</div>
+    <div class="tabs">${tabs}</div>${body}</div>`;
+  app.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { k.tab = +b.dataset.t; renderKey(); scrollTo(0, 0); });
+  $("kx").onclick = () => { keyView = null; renderStart(); };
+}
+
+document.addEventListener("keydown", e => {
+  if (e.target.matches("input") || e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (S.screen === "game") {
+    if (k >= "1" && k <= "8") reveal(+k - 1);
+    else if (k === "x") strike();
+    else if (k === "a") setControl(0);
+    else if (k === "l") setControl(1);
+    else if (k === "r") revealRest();
+    else if (k === "n") nextRound();
+  }
+  if (S.screen === "fast") {
+    if (k >= "1" && k <= "8") pickFast(+k - 1);
+    else if (k === "x") pickFast(-1);
+  }
+  if (S.screen === "game" || S.screen === "fast") {
+    if (k === "m") toggleSound();
+    else if (k === "b") toggleMusic();
+    else if (k === "f") toggleFull();
+  }
+  if (k === "u" && (S.screen === "game" || S.screen === "fast")) undo();
+});
+
+function start(data) {
+  if (data && data.S) { S = data.S; if (S.code) G = gameFor(S.code); }
+  window.claude?.hot?.snapshot?.(() => ({ S }));
+  render();
+}
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
+
+</html>
